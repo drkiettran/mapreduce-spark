@@ -22,9 +22,8 @@ public class WordCountService {
 
 		JavaRDD<String> textFile = sc.textFile(input);
 		JavaPairRDD<String, Integer> counts = textFile
-				.flatMap(s -> Arrays.asList(s.replaceAll("[^A-Za-z0-9 ]", " ").split(" "))
-						.iterator())
-				.mapToPair(word -> new Tuple2<>(word, 1)).reduceByKey((a, b) -> a + b);
+				.flatMap(s -> Arrays.asList(s.replaceAll("[^A-Za-z0-9 ]", " ").split(" ")).iterator())
+				.mapToPair(word -> new Tuple2<>(word, 1)).reduceByKey((a, b) -> a + b).sortByKey();
 
 		MRSparkUtil.deleteHdfsFile(sc, host, new Path(output));
 		counts.saveAsTextFile(output);
